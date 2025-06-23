@@ -1,0 +1,1205 @@
+{
+	"info": {
+		"_postman_id": "1d35b1ca-c3da-4ba6-a96b-e615e8740934",
+		"name": "Integration for whitelabel Payment Infrastructure - agency banking and merchant collection",
+		"description": "This guide will provide you with a clear and user-friendly overview of the available endpoints and services for your use case.\n\n**Environments**\n\nThis collection provides you with a partially-configured environment, named BaseEnv. The token and referal code values are automatically set upon sending a `Login` request. However, the apiKey needs to be set manually. We will provide you with the specific apiKey when it is required.\n\n**Base-URLs**\n\nAs you consume the endpoints here, you will be interacting with URLs from different environments: Staging and Production. The distinction between these lies in the URL structure, like so:\n\n- Production - agentauthapi.errandpay.com/\n    \n- Staging - staging.agentauthapi.errandpay.com/\n    \n\nTo switch between environments, you can simply add or remove the word 'staging' in the URL.\n\nIt is important to note that the variables (token, apiKey and referalCode) mentioned earlier are specific to their respective environments. In other words, staging variables will only function correctly within the staging environment, while production variables are meant for use in the production environment.\n\n**API Services Overview**\n\nDepending on your usecase, these services may be of interest to you:\n\n- **Transaction Notifications**\n    \n\nFor Cashout, Bill Payments and Fund Transfers we require an endpoint to which notifications, in JSON, will be sent. The structure of these notifications is described in the `POS Transaction Notifications` folder.\n\n- **Agent Balance Check API**\n    \n\nIn the event that agent account information is stored on your end, we'd require an endpoint to verify an agent's balance, PIN and account status before a transaction.\n\nThe nuances are discussed in the `Balance Check` folder. In the event that any of the checks fail, ErrandPay will not proceed with the transaction.\n\n- **Virtual Account Service**\n    \n\nThis service allows you to generate unique bank account numbers for your agents. Once a customer transfers funds to the assigned bank account number, you will receive instant payment in the collections account. This streamlines reconciliation and allows you to receive payments instantly. This service is further discussed in the `Virtual Account Service` folder\n\n- **KYC as a Service**\n    \n\nOur KYC profiling module enables you to validate your customers' information. _BVN_, _Account_, or _NIN_ can be used for customer validation. This service is further discussed in the `KYC` folder.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26333685"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"SuperAgent\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"SuperAgent\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"loginToken\": \"janedoe.test@gmail.com\",\n  \"password\": \"yEZofQbW7f!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://staging.agentauthapi.errandpay.com/api/v1/login",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentauthapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						},
+						"description": "This is the endpoint required for getting the authentication bearer token.\n\nThe `loginToken` is the email of the user.\n\nThere are a lot of fields in the response, but the only fields you need are the `accessToken`, `tokenType`, `expiresIn` and `referalCode` fields.\n\nThe referal code is also called the institution or business code."
+					},
+					"response": [
+						{
+							"name": "Login Endpoint",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"loginToken\": \"janedoe.test@gmail.com\",\n  \"password\": \"yEZofQbW7f!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://staging.agentauthapi.errandpay.com/api/v1/login",
+									"protocol": "https",
+									"host": [
+										"staging",
+										"agentauthapi",
+										"errandpay",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"login"
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"apiVersion\": \"v1\",\n    \"referenceId\": \"\",\n    \"code\": \"200\",\n    \"message\": \"Successful\",\n    \"data\": {\n        \"id\": \"e114286c-3342-4ecc-aff9-057d6d15b3cb\",\n        \"firstName\": \"Test\",\n        \"lastName\": \"User\",\n        \"userName\": \"test.user@test.com\",\n        \"email\": \"test.user@test.com\",\n        \"phoneNumber\": \"+2348012345987\",\n        \"status\": \"Active\",\n        \"roleCode\": \"Mfb\",\n        \"referalCode\": \"A90934\",\n        \"userReferalCode\": \"A90934\",\n        \"countryCode\": null,\n        \"isPINSet\": true,\n        \"isKycCompleted\": false,\n        \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QudXNlckB0ZXN0LmNvbSIsIm5iZiI6MTY3MTUzMjU2NiwiZXhwIjoxNjcxNTM5NzY2LCJpYXQiOjE2NzE1MzI1NjZ9.HZgDs_JRl_m8KH4-0jkD4paw7AiQB2tDogO4M5KfX9U\",\n        \"tokenType\": \"Bearer\",\n        \"expiresIn\": \"2022-12-20T12:36:06.7342186Z\",\n        \"refreshToken\": \"I6vf7dwOQNJsAv2s4dw+Vy7XeAr0qxFrhfTGSGlGvok=\",\n        \"agentCode\": null,\n        \"isEmailConfirmed\": true,\n        \"isPhoneNumberConfirmed\": true,\n        \"lga\": null,\n        \"address\": null,\n        \"state\": null,\n        \"isSecurityQuestionSet\": false,\n        \"isPushNotificationSet\": true,\n        \"isDeviceTokenValidated\": false,\n        \"isDefaultPassword\": false,\n        \"tierCode\": null,\n        \"isKycSentToThirdParty\": true\n    },\n    \"error\": {\n        \"message\": null\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "POS Transaction Notifications",
+			"item": [
+				{
+					"name": "CashOut Notification Body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"StatusCode\": \"00\",\n    \"StatusDescription\": \"Successful\",\n    \"SerialNumber\": \"82912785\",\n    \"Amount\": 10.00,\n    \"TransactionReference\": \"384345838903\",\n    \"Currency\": \"NGN\",\n    \"TransactionDate\": \"07/03/2022\",\n    \"TransactionTime\": \"10:44:03 AM\",\n    \"TransactionType\": \"CashOut\",\n    \"ServiceCode\": \"C01\",\n    \"Fee\": 0.05,\n    \"PostingType\": \"Cr\",\n    \"AdditionalDetails\": {\n        \"MaskedPAN\": \"506110xxxxxxxxx0460\",\n        \"Stan\": \"838903\",\n        \"CardExpiry\": \"2404\",\n        \"TerminalID\": \"2033CXFD\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "This is a sample of the notification we send to your webhook for a cash out transaction."
+					},
+					"response": []
+				},
+				{
+					"name": "BillPayment Notification body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"StatusCode\": \"00\",\n    \"StatusDescription\": \"Approvedorcompletedsuccessfully\",\n    \"SerialNumber\": \"82912785\",\n    \"Amount\": 100,\n    \"Fee\": 0,\n    \"TransactionReference\": \"B385060290088\",\n    \"Currency\": \"NGN\",\n    \"TransactionDate\": \"03/15/2022\",\n    \"TransactionTime\": \"17:11:29\",\n    \"TransactionType\": \"BillsPayment\",\n    \"PostingType\": \"Dr\",\n    \"ServiceCode\": \"BAT1\",\n    \"AdditionalDetails\": {\n        \"BillCategory\": \"Airtime\",\n        \"BillService\": \"MTN\",\n        \"Beneficiary\": \"09062058992 MTN\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "This is a sample of the notification we send to your webhook for a bill payment transaction."
+					},
+					"response": []
+				},
+				{
+					"name": "FundTransfer Notification body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"StatusCode\": \"00\",\n    \"StatusDescription\": \"Approvedorcompletedsuccessfully\",\n    \"SerialNumber\": \"82912785\",\n    \"Amount\": 120,\n    \"Fee\": 10,\n    \"TransactionReference\": \"T385060576806\",\n    \"Currency\": \"NGN\",\n    \"TransactionDate\": \"03/15/2022\",\n    \"TransactionTime\": \"17:16\",\n    \"TransactionType\": \"FundTransfer\",\n    \"PostingType\": \"Dr\",\n    \"ServiceCode\": \"FT1\",\n    \"AdditionalDetails\": {\n        \"DestinationAccountName\": \"Oladipupo Peter Durojaiye\",\n        \"DestinationAccountNumber\": \"0775845583\",\n        \"DestinationBankName\": \"Access Bank\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "This is a sample of the notification we send to your webhook for a fund transfer transaction."
+					},
+					"response": []
+				},
+				{
+					"name": "Purchase Notification Body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"StatusCode\": \"00\",\r\n    \"StatusDescription\": \"Successful\",\r\n    \"SerialNumber\": \"82912785\",\r\n    \"Amount\": 10.00,\r\n    \"TransactionReference\": \"384345838903\",\r\n    \"Currency\": \"NGN\",\r\n    \"TransactionDate\": \"07/03/2022\",\r\n    \"TransactionTime\": \"10:44:03 AM\",\r\n    \"TransactionType\": \"Purchase\",\r\n    \"ServiceCode\": \"PU1\",\r\n    \"Fee\": 0.05,\r\n    \"PostingType\": \"Cr\",\r\n    \"AdditionalDetails\": {\r\n        \"MaskedPAN\": \"506110xxxxxxxxx0460\",\r\n        \"Stan\": \"838903\",\r\n        \"CardExpiry\": \"2404\",\r\n        \"TerminalID\": \"2033CXFD\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "This is an example of the notification sent to your webhook for Purchase transactions."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Balance Check",
+			"item": [
+				{
+					"name": "Suggested Balance Check Endpoint",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"1234\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": true,\n    \"serviceCode\": \"FT1\",\n    \"amount\": 1234.56,\n    \"reference\": \"T405679888597\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "This is an example of how to structure your balance check endpoint.\n\nThe specifics are up to you, but we require that we can send the serial number of the POS terminal and the pin of the agent to the endpoint, then get a response that validates the pin, and returns the balance of the agent.\n\nIf you would also like to prevent agents from transacting, that is, if the agents are blocked on your system, you need to inform us in the response body of the endpoint that the agent is not allowed to transact. Hence, the \"agent_status\" field in the suggested response body.\n\nAdditionally, if you also require that we confirm the status of the agent for a cashout transaction (inward), you need to modify your balance endpoint to not validate pin for cashout transactions. In that scenario, the request body would be something like this\n\n**REQUEST:**\n\n``` json\n{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"\",\n    \"transaction_type\": \"inward\"\n}\n\n ```\n\nAnd if the response resembles this below, we would not proceed with the cashout transaction\n\n**RESPONSE:**\n\n``` json\n{\n    \"is_pin_valid\": true,\n    \"balance\": 3000.00,\n    \"agent_status\": \"InActive\"\n}\n\n ```\n\nBill payments and Fund transfers are outward transactions and always need pin validation. If you would also like to initiate a debit on an agent's balance for certain transactions like bill payments or fund transfers prior to when we process the transaction, you can modify your endpoint to match this request body below, with debitAgent property as a boolean. When it is true, you need to debit that agent after validating the pin. When it is false, you may or may not validate the pin, depending on whether the transaction is inward or outward.\n\n**EXAMPLE FUND TRANSFER REQUEST:**\n\n``` json\n{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"1234\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": true,\n    \"serviceCode\": \"FT1\",\n    \"amount\": 1234.56\n}\n\n ```\n\n**EXAMPLE BALANCE ENQUIRY REQUEST:**\n\n``` json\n{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"1234\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": false,\n    \"serviceCode\": \"BLE1\",\n    \"amount\": 0\n}\n\n ```\n\n**EXAMPLE CASHOUT AGENT REQUEST:**\n\n``` json\n{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"\",\n    \"transaction_type\": \"inward\",\n    \"debitAgent\": false,\n    \"serviceCode\": \"CO1\",\n    \"amount\": 0\n}\n\n ```\n\nOptionally, for requests, we can add a reference field, in case you are choosing to pre debit your agent and want to track the transaction with the reference.\n\n**EXAMPLE FUND TRANSFER REQUEST WITH REFERENCE:**\n\n``` json\n{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"1234\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": true,\n    \"serviceCode\": \"FT1\",\n    \"amount\": 1234.56,\n    \"reference\": \"T405679888597\"\n}\n\n ```"
+					},
+					"response": [
+						{
+							"name": "Suggested Agent Balance Check Endpoint",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"1234\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": ""
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"is_pin_valid\": true,\n    \"balance\": 3000.00,\n    \"agent_status\": \"Active\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Cashout Request and Response",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"0000\",\n    \"transaction_type\": \"inward\",\n    \"debitAgent\": false,\n    \"serviceCode\": \"CO1\",\n    \"amount\": 1234.56,\n    \"reference\": \"405679888597\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "Things to take note of:  \n**transaction_type** of `inward` indicates that whatever is added in the pin field should not be validated  \n\n**debitAgent** as `false` indicates that the agent should not be debited."
+					},
+					"response": [
+						{
+							"name": "Cashout Request and Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"0000\",\n    \"transaction_type\": \"inward\",\n    \"debitAgent\": false,\n    \"serviceCode\": \"CO1\",\n    \"amount\": 1234.56,\n    \"reference\": \"405679888597\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": ""
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"is_pin_valid\": true,\n    \"balance\": 3000.00,\n    \"agent_status\": \"Active\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Fund Transfer Request and Response",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"3284\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": true,\n    \"serviceCode\": \"FT1\",\n    \"amount\": 1234.56,\n    \"reference\": \"T405679888597\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "Things to take note of:  \n**transaction_type** of `outward` indicates that whatever is added in the pin field should definitely be validated  \n\n**debitAgent** as `true` indicates that the agent should be pre-debited, if you so wish."
+					},
+					"response": [
+						{
+							"name": "Fund Transfer Request and Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"3284\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": true,\n    \"serviceCode\": \"FT1\",\n    \"amount\": 1234.56,\n    \"reference\": \"T405679888597\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": ""
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"is_pin_valid\": true,\n    \"balance\": 3000,\n    \"agent_status\": \"Active\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Bill Payment Request and Response",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"3284\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": true,\n    \"serviceCode\": \"BAT1\",\n    \"amount\": 200.00,\n    \"reference\": \"B405679888597\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "Things to take note of:  \n**transaction_type** of `outward` indicates that whatever is added in the pin field should definitely be validated\n\n**debitAgent** as `true` indicates that the agent should be pre-debited, if you so wish."
+					},
+					"response": [
+						{
+							"name": "Bill Payment Request and Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"3284\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": true,\n    \"serviceCode\": \"BAT1\",\n    \"amount\": 200.00,\n    \"reference\": \"B405679888597\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": ""
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"is_pin_valid\": true,\n    \"balance\": 3000,\n    \"agent_status\": \"Active\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Balance check Request and Response",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"3284\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": false,\n    \"serviceCode\": \"BLE1\",\n    \"amount\": 0,\n    \"reference\": \"A405679888597\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "Things to take note of:  \n**transaction_type** of `outward` indicates that whatever is added in the pin field should definitely be validated\n\n**debitAgent** as `false` indicates that the agent should not be debited."
+					},
+					"response": [
+						{
+							"name": "Balance check Request and Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"serial_number\": \"82912785\",\n    \"pin\": \"3284\",\n    \"transaction_type\": \"outward\",\n    \"debitAgent\": false,\n    \"serviceCode\": \"BLE1\",\n    \"amount\": 0,\n    \"reference\": \"A405679888597\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": ""
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"is_pin_valid\": true,\n    \"balance\": 3000,\n    \"agent_status\": \"Active\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Retailers Notification Request",
+			"item": [
+				{
+					"name": "Cash Pickup Notification Body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"StatusCode\": \"00\",\n    \"StatusDescription\": \"Approvedorcompletedsuccessfully\",\n    \"EPAccountNumber\": \"82912785587\",\n    \"Amount\": 120,\n    \"Fee\": 10,\n    \"TransactionReference\": \"T385060576806\",\n    \"Currency\": \"NGN\",\n    \"TransactionDate\": \"03/15/2022\",\n    \"TransactionTime\": \"17:16\",\n    \"TransactionType\": \"CashPickup\",\n    \"PostingType\": \"Cr\",\n    \"ServiceCode\": \"RT1\",\n    \"DepositorName\": \"Delivery guy 1\",\n    \"DepositorPhoneNumber\": \"08012345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						},
+						"description": "This is a sample of the notification we send to your webhook for a cash pickup transaction."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction Status",
+			"item": [
+				{
+					"name": "Check Transaction Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/GetStatus?reference=FT12345681dev&businessCode={{referalCode}}",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentserviceapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"GetStatus"
+							],
+							"query": [
+								{
+									"key": "reference",
+									"value": "FT12345681dev"
+								},
+								{
+									"key": "businessCode",
+									"value": "{{referalCode}}"
+								}
+							]
+						},
+						"description": "This endpoint can be used to retrieve the current status of a transaction.\n\nThe request requires a bearer token from the `login` endpoint for authorization. It also requires the business code of the institution. This business code does not change after onboarding and is a unique identifier for the institution. From the login endpoint, the business code is value of the `\"referalCode\"` field.\n\nPossible example responses below:\n\nSucccessful check\n\n``` json\n{\n  \"apiVersion\": \"v1\",\n  \"referenceId\": \"\",\n  \"code\": \"200\",\n  \"message\": \"Successful\",\n  \"data\": {\n    \"status\": \"Successful\",\n    \"statusCode\": \"00\"\n  },\n  \"error\": {\n    \"message\": null\n  }\n}\n\n```\n\nSuccessful check, but transaction failed:\n\n``` json\n{\n  \"apiVersion\": \"v1\",\n  \"referenceId\": \"\",\n  \"code\": \"200\",\n  \"message\": \"Successful\",\n  \"data\": {\n    \"status\": \"Failed\",\n    \"statusCode\": \"400\"\n  },\n  \"error\": {\n    \"message\": null\n  }\n}\n\n```\n\nSuccessful check, but transaction pending:\n\n``` json\n{\n  \"apiVersion\": \"v1\",\n  \"referenceId\": \"\",\n  \"code\": \"200\",\n  \"message\": \"Successful\",\n  \"data\": {\n    \"status\": \"Pending\",\n    \"statusCode\": \"200\"\n  },\n  \"error\": {\n    \"message\": null\n  }\n}\n\n```\n\nAny error occurred while checking the transaction status:\n\n``` json\n{\n  \"apiVersion\": \"v1\",\n  \"referenceId\": \"\",\n  \"code\": \"400\",\n  \"message\": \"Unsuccessful\",\n  \"data\": null,\n  \"error\": {\n    \"message\": \"Error message here\"\n  }\n}\n\n```"
+					},
+					"response": [
+						{
+							"name": "Transaction Status Check Endpoint",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/GetStatus?reference=T408975679885&businessCode=AXXXXX",
+									"protocol": "https",
+									"host": [
+										"staging",
+										"agentserviceapi",
+										"errandpay",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"GetStatus"
+									],
+									"query": [
+										{
+											"key": "reference",
+											"value": "T408975679885"
+										},
+										{
+											"key": "businessCode",
+											"value": "AXXXXX"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"apiVersion\": \"v1\",\n  \"referenceId\": \"\",\n  \"code\": \"200\",\n  \"message\": \"Successful\",\n  \"data\": {\n    \"status\": \"Successful\",\n    \"statusCode\": \"00\"\n  },\n  \"error\": {\n    \"message\": null\n  }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Virtual Account Service",
+			"item": [
+				{
+					"name": "CreateVirtualAccount",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": {{userId}},\n    \"customerBvn\": \"\",\n    \"phoneNumber\": \"\",\n    \"customerName\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/CreateVirtualAccount",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentserviceapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"CreateVirtualAccount"
+							]
+						},
+						"description": "This is an endpoint for creating Virtual Accounts. The virtual account service allows you to generate a bank account number for the customer. From the assigned account number, you will easily get paid once the customer transfers to their given bank account number. This would streamline reconciliation and allow you to receive payment instantly.\n\nIt uses the \"customerBvn\" for verification of the customer before generating an account number for the customer."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\":\"\",\n    \"customerBvn\": \"\",\n    \"phoneNumber\": \"\",\n    \"customerName\": \"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/CreateVirtualAccount",
+									"protocol": "https",
+									"host": [
+										"staging",
+										"agentserviceapi",
+										"errandpay",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"CreateVirtualAccount"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "WWW-Authenticate",
+									"value": "Bearer error=\"invalid_token\", error_description=\"The token expired at '10/26/2022 15:26:14'\""
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 21 Jun 2023 09:21:45 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"apiVersion\": \"v1\",\n    \"code\": \"200\",\n    \"data\": {\n        \"AccountName\": \"\",\n        \"AccountNumber\": \"\",\n        \"AccountOfficer\": \"\",\n        \"Balance\": 0,\n        \"Bvn\": \"\",\n        \"CountryCode\": \"\",\n        \"Currency\": \"\",\n        \"Status\": \"\",\n        \"ThirdPartyAccountDetail\": {\n            \"AccountName\": \"\",\n            \"Bank\": \"\",\n            \"ThirdPartyAccountNumber\": \"\"\n        },\n        \"TierCode\": \"\",\n        \"UserId\": \"\"\n    },\n    \"error\": {\n        \"message\": null\n    },\n    \"message\": \"Successful\",\n    \"referenceId\": \"\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Created Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/GetSubAccounts?businessCode={{referalCode}}",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentserviceapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"GetSubAccounts"
+							],
+							"query": [
+								{
+									"key": "businessCode",
+									"value": "{{referalCode}}",
+									"description": "The business code"
+								}
+							]
+						},
+						"description": "This is an endpoint for retrieving details of created Virtual Accounts.\n\nThe business code is **required** and can be gotten from the `ReferalCode` field in the response of the authentication endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/GetSubAccountHistory?businessCode={{referalCode}}&accountNumber&pageNumber=1&pageSize=50",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentserviceapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"GetSubAccountHistory"
+							],
+							"query": [
+								{
+									"key": "businessCode",
+									"value": "{{referalCode}}",
+									"description": "The value of the business code"
+								},
+								{
+									"key": "accountNumber",
+									"value": "",
+									"description": "The account number to retrieve history for"
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "50"
+								}
+							]
+						},
+						"description": "This is an endpoint for retrieving transaction details of created Virtual Accounts.\n\nThe business code is **required** and can be gotten from the `ReferalCode` field in the response of the authentication endpoint.\n\nThe account number refers to the virtual account number whose history is to be retrieved. It is also **required.**"
+					},
+					"response": []
+				},
+				{
+					"name": "VirtualAccount Credit Notification Body",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"StatusCode\": \"00\",\n    \"StatusDescription\": \"Successful\",\n    \"VirtualCustomerName\": \"Ene Paul\",\n    \"VirtualCustomerAccount\": \"2619943920\",\n    \"Amount\": 120,\n    \"Fee\": 10,\n    \"TransactionReference\": \"VAST385060576806\",\n    \"Currency\": \"NGN\",\n    \"TransactionDate\": \"03/15/2022\",\n    \"TransactionTime\": \"17:16\",\n    \"TransactionType\": \"FundWallet\",\n    \"PostingType\": \"Cr\",\n    \"ServiceCode\": \"VAS1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "KYC",
+			"item": [
+				{
+					"name": "KYC check endpoint",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearertoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"\",\n    \"kycType\": \"bvn\",\n    \"token\": \"\",\n    \"bankCode\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/GetKycDetails",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentserviceapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"GetKycDetails"
+							]
+						},
+						"description": "This endpoint is used to get the KYC(Know your Customer) details used to verify a customer.\n\nIt takes the userId of the customer, and the type of KYC used by the customer for verification. The available KYC types are: \"BVN\", \"NIN\", and \"NUBAN\".\n\nThe endpoint returns the details of the customer. Below are sample request bodies\n\nGet KYC details using BVN:\n\n``` json\n{\n    \"userId\": \"\",\n    \"kycType\": \"BVN\",\n    \"token\": \"\",\n    \"bankCode\": null\n}\n\n```\n\nGet KYC Details using NIN\n\n``` json\n{\n    \"userId\": \"\",\n    \"kycType\": \"NIN\",\n    \"token\": \"\",\n    \"bankCode\": null\n}\n\n```\n\nGet KYC details using NUBAN\n\n``` json\n{\n    \"userId\": \"\",\n    \"kycType\": \"NUBAN\",\n    \"token\": \"\",\n    \"bankCode\": null\n}\n\n```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Credit Notification",
+			"item": [
+				{
+					"name": "Webhook/Notify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "epKey",
+								"value": "{{apikey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Amount\": 23000.00,\r\n    \"DateOfTransaction\": \"2023-03-31T13:51:26.9656662+01:00\",\r\n    \"SenderAccountNumber\": \"1234500000\",\r\n    \"SenderAccountName\": \"Mr Man\",\r\n    \"OriginatorBank\": \"Big Bank\",\r\n    \"RecipientAccountNumber\": \"0000012345\",\r\n    \"RecipientAccountName\": \"Mrs Man\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/Webhook/Notify",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentserviceapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Webhook",
+								"Notify"
+							]
+						},
+						"description": "Pass the apiKey in a header named **epKey** to send notifications to this endpoint. For non-BankOne businesses, use the request body below as a reference.\n\n**OriginatorBank** - the bank making the transfer.\n\n**RecipientAccountNumber** - The account number tied to the POS terminal. This property **must** have a value."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "epKey",
+										"value": "{{apikey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Amount\": 23000.00,\r\n    \"DateOfTransaction\": \"2023-03-31T13:51:26.9656662+01:00\",\r\n    \"SenderAccountNumber\": \"1234500000\",\r\n    \"SenderAccountName\": \"Mr Man\",\r\n    \"OriginatorBank\": \"Big Bank\",\r\n    \"RecipientAccountNumber\": \"0000012345\",\r\n    \"RecipientAccountName\": \"Mrs Man\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://staging.agentserviceapi.errandpay.com/api/v1/Webhook/Notify",
+									"protocol": "https",
+									"host": [
+										"staging",
+										"agentserviceapi",
+										"errandpay",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"Webhook",
+										"Notify"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"BillerReference\": \"6d5b78e7-14a3-4e7b-9b63-2489b7ccbc2f\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Using the apiKey for your business, send funding notifications to ErrandPay using this endpoint."
+		},
+		{
+			"name": "Third-Party Users",
+			"item": [
+				{
+					"name": "AddThirdPartyAgent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "epKey",
+								"value": "{{apikey}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "User-Role",
+								"value": "SuperAgent",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"FirstName\": \"John\",\r\n    \"LastName\": \"Doe\",\r\n    \"Email\": \"johndoe@example.com\",\r\n    \"PhoneNumber\": \"+1234567890\",\r\n    \"BVN\": \"1234567890\",\r\n    \"dateOfBirth\": \"yyyy-mm-dd\",\r\n    //   Optional Properties\r\n    \"AccountNumber\": \"1234567890\",\r\n    \"BankName\": \"Bank of America\",\r\n    \"BusinessName\": \"Acme Corporation\",\r\n    \"BusinessAddress\": \"123 Main Street, Anytown, USA\",\r\n    \"RCNumber\": \"1234567890\",\r\n    \"serialNumber\": \"00000\",\r\n    \"terminalId\": \"00000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://staging.agentauthapi.errandpay.com/api/v1/AddThirdPartyAgent",
+							"protocol": "https",
+							"host": [
+								"staging",
+								"agentauthapi",
+								"errandpay",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"AddThirdPartyAgent"
+							]
+						},
+						"description": "This API endpoint is used by partners who have their own platforms to manage agents. When an agent is onboarded on their end, the information in the model must be sent to this endpoint.\n\nIt can also be used to onboard agents via API, instead of through the backoffice.\n\n**Request:**\n\nThe request must include the following parameters:\n\n- `model`: The JSON body containing details about the new agent. This is a required parameter.\n    \n- `DateOfBirth`: The agent's date of birth. Required and must be in this format: **yyyy-mm-dd.**\n    \n- `epKey`: The API authentication key for the business associated with the new agent. This is a required parameter and should be passed in a header named `epKey`.\n    \n\nThe following properties in the `model` parameter are optional and can be omitted:\n\n- `AccountNumber:` The agent's account number.\n- `BankName` : The bank the account number is attached to.\n- `BusinessName`: The name of the agent's business.\n- `BusinessAddress`: The address of the agent's business.\n- `RCNumber`: The RC number of the agent's business.\n- `SerialNumber`: The serial number of the POS you wish to assign.\n    \n- `TerminalId`: The terminal ID of the POS you wish to assign. Both `serialNumber` and `terminalId` must be present to map a terminal.\n    \n\nThese optional properties should only be provided when the agent has a custom name and address attached to their POS.\n\n**Response:**\n\nThe response is an ApiResponse object that shows whether the operation was successful or not."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "epKey",
+										"value": "{{apikey}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "User-Role",
+										"value": "SuperAgent",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"FirstName\": \"John\",\r\n    \"LastName\": \"Doe\",\r\n    \"Email\": \"johndoe@example.com\",\r\n    \"PhoneNumber\": \"+1234567890\",\r\n    \"BVN\": \"1234567890\",\r\n    \"dateOfBirth\": \"yyyy-mm-dd\",\r\n    //   Optional Properties\r\n    \"AccountNumber\": \"1234567890\",\r\n    \"BankName\": \"Bank of America\",\r\n    \"BusinessName\": \"Acme Corporation\",\r\n    \"BusinessAddress\": \"123 Main Street, Anytown, USA\",\r\n    \"RCNumber\": \"1234567890\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://staging.agentauthapi.errandpay.com/api/v1/AddThirdPartyAgent",
+									"protocol": "https",
+									"host": [
+										"staging",
+										"agentauthapi",
+										"errandpay",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"AddThirdPartyAgent"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Length",
+									"value": "385"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 09 Aug 2023 10:29:43 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"apiVersion\": \"v1\",\n    \"referenceId\": \"\",\n    \"code\": \"200\",\n    \"message\": \"Successful\",\n    \"data\": {\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"johndoe@example.com\",\n        \"phoneNumber\": \"+1234567890\",\n        \"accountNumber\": \"1234567890\",\n        \"bankName\": \"Bank of America\",\n        \"bvn\": \"1234567890\",\n        \"businessName\": \"Acme Corporation\",\n        \"businessAddress\": \"123 Main Street, Anytown, USA\",\n        \"rcNumber\": \"1234567890\",\n        \"dateOfBirth\": \"yyyy-mm-dd\"\n    },\n    \"error\": {\n        \"message\": null\n    }\n}"
+						},
+						{
+							"name": "API Key Missing",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "epKey",
+										"value": "{{apikey}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "User-Role",
+										"value": "SuperAgent",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"FirstName\": \"John\",\r\n    \"LastName\": \"Doe\",\r\n    \"Email\": \"johndoe@example.com\",\r\n    \"PhoneNumber\": \"+1234567890\",\r\n    \"BVN\": \"1234567890\",\r\n    \"dateOfBirth\": \"yyyy-mm-dd\",\r\n    //   Optional Properties\r\n    \"AccountNumber\": \"1234567890\",\r\n    \"BankName\": \"Bank of America\",\r\n    \"BusinessName\": \"Acme Corporation\",\r\n    \"BusinessAddress\": \"123 Main Street, Anytown, USA\",\r\n    \"RCNumber\": \"1234567890\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://staging.agentauthapi.errandpay.com/api/v1/AddThirdPartyAgent",
+									"protocol": "https",
+									"host": [
+										"staging",
+										"agentauthapi",
+										"errandpay",
+										"com"
+									],
+									"path": [
+										"api",
+										"v1",
+										"AddThirdPartyAgent"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Length",
+									"value": "160"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 09 Aug 2023 10:30:15 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"apiVersion\": \"v1\",\n    \"referenceId\": null,\n    \"code\": \"400\",\n    \"message\": \"Unsuccessful\",\n    \"data\": null,\n    \"error\": {\n        \"message\": \"Invalid API Key, the business could not be found.\"\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "bearertoken",
+			"value": "bearer-token"
+		},
+		{
+			"key": "agentAuth",
+			"value": "https://api.errandpay.com/epagentauth"
+		},
+		{
+			"key": "stagingAuth",
+			"value": "https://stagingapi.errandpay.com/epagentauth",
+			"type": "string"
+		}
+	]
+}
